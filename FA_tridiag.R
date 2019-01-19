@@ -1,6 +1,9 @@
 FA_tridiag<- function (dataset, curr_rank, Phi_init = c(1), Max_iter = 1000, tol = 10^-4, lb = 10^-3) 
 {
   # needs package psych for tr()
+  # rARPACK for eigs()
+  # Matrix for triu
+  # 
   
   l = length(as.vector(Phi_init))
   nsample = nrow(dataset)
@@ -40,7 +43,7 @@ FA_tridiag<- function (dataset, curr_rank, Phi_init = c(1), Max_iter = 1000, tol
     # The S_star matrix 
     
     s1 = (s1 + t(s1))/2
-    vd = eigen(s1,curr_rank); d = vd$values
+    vd = eigs(s1,curr_rank); d = vd$values
     v = vd$vectors
     
     # calculating subgradient
@@ -66,9 +69,9 @@ FA_tridiag<- function (dataset, curr_rank, Phi_init = c(1), Max_iter = 1000, tol
   
   # Obtaining Psi by inverting Phi 
   
-  Psi = inv(Phi)
+  Psi = solve(Phi)
   
   # Lambda = calculate_Lambda(Psi, S, rnk)
-  out = list(inv_Psi = Phi, Psi = Psi, norm_difference = diff_norm[c(2:(k - 1))])
+  out = list(Psi = Psi, Psi_inverse = Phi, norm_difference = diff_norm[c(2:(k - 1))])
   return(out)
 }
