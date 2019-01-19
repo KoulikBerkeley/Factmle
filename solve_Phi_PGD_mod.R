@@ -61,10 +61,10 @@ for(iter in 2:maxiter){
               print('feasibility-viol')
               stepsize = stepsize/2; 
                                                       
-              phiknew = phik - stepsize*grad;  phiknew(idszero) = 0; phiknew = (phiknew + t(phiknew))/2;
+              phiknew = phik - stepsize*grad;  phiknew[idszero] = 0; phiknew = (phiknew + t(phiknew))/2;
               
-              svd_phinew2 = svd(phiknew, nu =0, nv = 0)
-              objvals(iter) = -sum(log( svd_phiknew2$d )) + tr(as.matrix(t(SS)%*%phiknew));
+              svd_phiknew2 = svd(phiknew, nu =0, nv = 0)
+              objvals[iter] = -sum(log( svd_phiknew2$d )) + tr(as.matrix(t(SS)%*%phiknew));
                
                                                       
                   if (stepsize <= 10^-8){

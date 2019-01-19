@@ -1,16 +1,21 @@
-FA_tridiag<- function (dataset, curr_rank, Phi_init = c(1), Max_iter = 1000, tol = 10^-4, lb = 10^-3, Threshold_p = 10^-4) 
+FA_tridiag<- function (dataset, curr_rank, Phi_init = c(1), Max_iter = 1000, tol = 10^-4, lb = 10^-3) 
 {
+  # needs package psych for tr()
+  
   l = length(as.vector(Phi_init))
   nsample = nrow(dataset)
   dim = ncol(dataset)
   S = cov(dataset)
+  
+  # initialization 
   if(l == 1){
     Phi_init = diag(0.2 + runif(dim, min = lb, max = 1))
   }
-  f = rep(1, Max_iter)
+  
   Phi = Phi_init
   k = 2
   check = 1
+  
   # m = colMeans(dataset)
   # stddataset = (1/sqrt(nsample - 1)) * (dataset - matrix(rep(m, nsample), nrow = nsample, ncol = dim, byrow = TRUE))
   # S = cov(stddataset)
@@ -47,14 +52,12 @@ FA_tridiag<- function (dataset, curr_rank, Phi_init = c(1), Max_iter = 1000, tol
     
     # updating optimal values of Phi
     
-    
-    
     Phi = solve_Phi_PGD_mod(Phi, S, Subgrad, 1000, 10^-6)
     
     
     # convergence criterion
     
-    check =((norm((Phi-Old_Phi))/norm((dim*(Old_Phi))) > Threshold_p) & (k < Max_iter));
+    check =((norm((Phi-Old_Phi))/norm((dim*(Old_Phi))) > tol) & (k < Max_iter));
     k = k + 1
     
     diff_norm[k] = norm((Phi-Old_Phi))/norm((dim*(Old_Phi)));
@@ -66,6 +69,6 @@ FA_tridiag<- function (dataset, curr_rank, Phi_init = c(1), Max_iter = 1000, tol
   Psi = inv(Phi)
   
   # Lambda = calculate_Lambda(Psi, S, rnk)
-  out = list(Psi = Psi, norm_difference = diff_norm[c(2:(k - 1))])
+  out = list(inv_Psi = Phi, Psi = Psi, norm_difference = diff_norm[c(2:(k - 1))])
   return(out)
 }
